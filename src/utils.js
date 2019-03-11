@@ -1,5 +1,5 @@
 // Math science
-const utils = {
+export const utils = {
   // Sum an array
   sum: arr => arr.reduce((acc, curr) => acc + curr, 0),
 

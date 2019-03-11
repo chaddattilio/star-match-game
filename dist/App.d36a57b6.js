@@ -25776,18 +25776,224 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"App.js":[function(require,module,exports) {
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"utils.js":[function(require,module,exports) {
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.utils = void 0;
+// Math science
+var utils = {
+  // Sum an array
+  sum: function sum(arr) {
+    return arr.reduce(function (acc, curr) {
+      return acc + curr;
+    }, 0);
+  },
+  // create an array of numbers between min and max (edges included)
+  range: function range(min, max) {
+    return Array.from({
+      length: max - min + 1
+    }, function (_, i) {
+      return min + i;
+    });
+  },
+  // pick a random number between min and max (edges included)
+  random: function random(min, max) {
+    return min + Math.floor(max * Math.random());
+  },
+  // Given an array of numbers and a max...
+  // Pick a random sum (< max) from the set of all available sums in arr
+  randomSumIn: function randomSumIn(arr, max) {
+    var sets = [[]];
+    var sums = [];
+
+    for (var i = 0; i < arr.length; i++) {
+      for (var j = 0, len = sets.length; j < len; j++) {
+        var candidateSet = sets[j].concat(arr[i]);
+        var candidateSum = utils.sum(candidateSet);
+
+        if (candidateSum <= max) {
+          sets.push(candidateSet);
+          sums.push(candidateSum);
+        }
+      }
+    }
+
+    return sums[utils.random(0, sums.length)];
+  }
+};
+exports.utils = utils;
+},{}],"PlayNumber.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// Color Theme
+var colors = {
+  available: "lightgray",
+  used: "lightgreen",
+  wrong: "lightcoral",
+  candidate: "deepskyblue"
+};
+
+var PlayNumber = function PlayNumber(props) {
+  return _react.default.createElement("button", {
+    className: "number",
+    style: {
+      backgroundColor: colors[props.status]
+    },
+    onClick: function onClick() {
+      return props.onClick(props.number, props.status);
+    }
+  }, props.number);
+};
+
+var _default = PlayNumber;
+exports.default = _default;
+},{"react":"../node_modules/react/index.js"}],"PlayAgain.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PlayAgain = function PlayAgain(props) {
+  return _react.default.createElement("div", {
+    className: "game-done"
+  }, _react.default.createElement("button", {
+    onClick: props.onClick
+  }, "Play Again"));
+};
+
+var _default = PlayAgain;
+exports.default = _default;
+},{"react":"../node_modules/react/index.js"}],"StarsDisplay.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _utils = require("./utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var StarsDisplay = function StarsDisplay(props) {
+  return _react.default.createElement(_react.default.Fragment, null, _utils.utils.range(1, props.count).map(function (starId) {
+    return _react.default.createElement("div", {
+      key: starId,
+      className: "star"
+    });
+  }));
+};
+
+var _default = StarsDisplay;
+exports.default = _default;
+},{"react":"../node_modules/react/index.js","./utils":"utils.js"}],"App.js":[function(require,module,exports) {
+"use strict";
+
+var _react = _interopRequireWildcard(require("react"));
 
 var _reactDom = require("react-dom");
 
 require("./style.scss");
 
+var _utils = require("./utils");
+
+var _PlayNumber = _interopRequireDefault(require("./PlayNumber"));
+
+var _PlayAgain = _interopRequireDefault(require("./PlayAgain"));
+
+var _StarsDisplay = _interopRequireDefault(require("./StarsDisplay"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var StarMatch = function StarMatch() {
+  var _useState = (0, _react.useState)(_utils.utils.random(1, 9)),
+      _useState2 = _slicedToArray(_useState, 2),
+      stars = _useState2[0],
+      setStars = _useState2[1];
+
+  var _useState3 = (0, _react.useState)(_utils.utils.range(1, 9)),
+      _useState4 = _slicedToArray(_useState3, 2),
+      availableNums = _useState4[0],
+      setAvailableNums = _useState4[1];
+
+  var _useState5 = (0, _react.useState)([]),
+      _useState6 = _slicedToArray(_useState5, 2),
+      candidateNums = _useState6[0],
+      setCandidateNums = _useState6[1];
+
+  var candidatesAreWrong = _utils.utils.sum(candidateNums) > stars;
+  var gameIsDone = availableNums.length === 0;
+
+  var resetGame = function resetGame() {
+    setStars(_utils.utils.random(1, 9));
+    setAvailableNums(_utils.utils.range(1, 9));
+    setCandidateNums([]);
+  };
+
+  var numberStatus = function numberStatus(number) {
+    if (!availableNums.includes(number)) {
+      return "used";
+    }
+
+    if (candidateNums.includes(number)) {
+      return candidatesAreWrong ? "wrong" : "candidate";
+    }
+
+    return "available";
+  };
+
+  var onNumberClick = function onNumberClick(number, currentStatus) {
+    if (currentStatus == "used") {
+      return;
+    }
+
+    var newCandidateNums = currentStatus === "available" ? candidateNums.concat(number) : candidateNums.filter(function (cn) {
+      return cn !== number;
+    });
+
+    if (_utils.utils.sum(newCandidateNums) !== stars) {
+      setCandidateNums(newCandidateNums);
+    } else {
+      var newAvailableNums = availableNums.filter(function (n) {
+        return !newCandidateNums.includes(n);
+      }); // redraw stars (from what's available)
+
+      setStars(_utils.utils.randomSumIn(newAvailableNums, 9));
+      setAvailableNums(newAvailableNums);
+      setCandidateNums([]);
+    }
+  };
+
   return _react.default.createElement("div", {
     className: "game"
   }, _react.default.createElement("div", {
@@ -25796,51 +26002,26 @@ var StarMatch = function StarMatch() {
     className: "body"
   }, _react.default.createElement("div", {
     className: "left"
-  }, _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
-  }), _react.default.createElement("div", {
-    className: "star"
+  }, gameIsDone ? _react.default.createElement(_PlayAgain.default, {
+    onClick: resetGame
+  }) : _react.default.createElement(_StarsDisplay.default, {
+    count: stars
   })), _react.default.createElement("div", {
     className: "right"
-  }, _react.default.createElement("button", {
-    className: "number"
-  }, "1"), _react.default.createElement("button", {
-    className: "number"
-  }, "2"), _react.default.createElement("button", {
-    className: "number"
-  }, "3"), _react.default.createElement("button", {
-    className: "number"
-  }, "4"), _react.default.createElement("button", {
-    className: "number"
-  }, "5"), _react.default.createElement("button", {
-    className: "number"
-  }, "6"), _react.default.createElement("button", {
-    className: "number"
-  }, "7"), _react.default.createElement("button", {
-    className: "number"
-  }, "8"), _react.default.createElement("button", {
-    className: "number"
-  }, "9"))), _react.default.createElement("div", {
+  }, _utils.utils.range(1, 9).map(function (number) {
+    return _react.default.createElement(_PlayNumber.default, {
+      key: number,
+      status: numberStatus(number),
+      number: number,
+      onClick: onNumberClick
+    });
+  }))), _react.default.createElement("div", {
     className: "timer"
   }, "Time Remaining: 10"));
 };
 
 (0, _reactDom.render)(_react.default.createElement(StarMatch, null), document.getElementById("root"));
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./style.scss":"style.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./style.scss":"style.scss","./utils":"utils.js","./PlayNumber":"PlayNumber.js","./PlayAgain":"PlayAgain.js","./StarsDisplay":"StarsDisplay.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -25868,7 +26049,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53617" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53796" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
